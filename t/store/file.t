@@ -4,8 +4,8 @@ use File::Spec;
 use MojoX::Session;
 use MojoX::Session::Store::File;
 
-#my $tempdir = tempdir(DIR => ".", CLEANUP => 1);
-my $tempdir = "./tmp";
+my $tempdir = tempdir(DIR => ".", CLEANUP => 1);
+#my $tempdir = "./tmp";
 
 my $session = MojoX::Session->new(
    store => MojoX::Session::Store::File->new(dir => $tempdir),

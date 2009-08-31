@@ -1,5 +1,4 @@
 package MojoX::Session::Store::File;
-
 use strict;
 use warnings;
 our $VERSION = '0.01';
@@ -10,7 +9,7 @@ use Storable;
 use File::Spec;
 use Data::Dumper;
 
-__PACKAGE__->attr(dir => (default => 0));
+__PACKAGE__->attr('dir');
 
 sub create {
     my ($self, $sid, $expires, $data) = @_;
@@ -27,10 +26,10 @@ sub update {
 sub load {
     my ($self, $sid) = @_;
     if (open my $fh, '<', $self->_to_path($sid)) {
-	my $value = Storable::fd_retrieve($fh);
-	close $fh;
-	my $expire = delete $value->{expire};
-	return ($expire, $value);
+        my $value = Storable::fd_retrieve($fh);
+        close $fh;
+        my $expire = delete $value->{expire};
+        return ($expire, $value);
     }
     undef;
 }
@@ -50,23 +49,24 @@ sub _to_path {
 
 sub delete_expire_session_files {
     my $class = shift;
-    my $dir = shift;
+    my $dir   = shift;
 
     my $fh;
     opendir($fh, $dir) or Carp::croak "Doesn't open dir : $dir.";
     my @files = readdir $fh;
     my $sess = MojoX::Session->new(store => $class->new(dir => $dir));
     for (@files) {
-	my ($sid, $dat) = split /\./, $_;
+        my ($sid, $dat) = split /\./, $_;
         next unless $dat eq 'dat';
-	$sess->load($sid);
-	if ($sess->is_expired) {
-	    unlink File::Spec->catfile($dir, $_);
-	}
+        $sess->load($sid);
+        if ($sess->is_expired) {
+            unlink File::Spec->catfile($dir, $_);
+        }
     }
 }
 
 1;
+
 __END__
 
 =head1 NAME
